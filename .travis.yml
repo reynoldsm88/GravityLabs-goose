@@ -5,6 +5,10 @@ cache:
     - $HOME/.ivy2
 
 language: scala
+language: java
+
+branches:
+  - /.*/
 
 scala:
   - 2.12.7
@@ -12,9 +16,5 @@ scala:
 jdk:
   - openjdk8
 
-branches:
-  only:
-    - master
-
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION clean compile test
+  - mvn clean install
