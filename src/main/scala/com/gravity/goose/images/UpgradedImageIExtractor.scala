@@ -13,8 +13,6 @@ import org.jsoup.select.Elements
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
 import scala.io.Source
-
-
 import scala.util.parsing.json.{JSON, JSONObject}
 
 /**
