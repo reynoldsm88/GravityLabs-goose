@@ -1,6 +1,6 @@
 package com.gravity.goose.images
 
-import org.junit.Test
+import org.junit.{Test, Ignore}
 import org.apache.http.client.HttpClient
 import com.gravity.goose.network.HtmlFetcher
 import com.gravity.goose.Configuration
@@ -11,7 +11,7 @@ import com.gravity.goose.Configuration
   * Date: 9/22/11
   * Integration test for Image Utilities helper methods
   */
-
+@Ignore
 class ImageUtilsIT {
 
     @Test
