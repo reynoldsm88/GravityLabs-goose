@@ -16,4 +16,4 @@ branches:
   - /.*/
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION clean test:compile
+  - sbt ++$TRAVIS_SCALA_VERSION clean test
