@@ -25,7 +25,7 @@ import java.io.File
   * Created by Jim Plush - Gravity.com
   * Date: 8/14/11
   */
-class Goose( config : Configuration = new Configuration ) {
+class Goose( config : Configuration = new Configuration, context : ExtractorContext = ExtractorContext() ) {
 
 
     initializeEnvironment()
@@ -36,12 +36,12 @@ class Goose( config : Configuration = new Configuration ) {
       * @url The url that you want to extract
       */
     def extractContent( url : String, rawHTML : String ) : Article = {
-        val cc = new CrawlCandidate( config, url, rawHTML )
+        val cc = new CrawlCandidate( config, context, url, rawHTML )
         sendToActor( cc )
     }
 
     def extractContent( url : String ) : Article = {
-        val cc = new CrawlCandidate( config, url, null )
+        val cc = new CrawlCandidate( config, context, url, null )
         sendToActor( cc )
     }
 
@@ -50,14 +50,14 @@ class Goose( config : Configuration = new Configuration ) {
     }
 
     def sendToActor( crawlCandidate : CrawlCandidate ) = {
-        val crawler = new Crawler( config )
+        val crawler = new Crawler( config, context )
         val article = crawler.crawl( crawlCandidate )
         article
     }
 
     def initializeEnvironment( ) {
 
-        val f = new File( config.localStoragePath )
+        val f = new File( context.localStoragePath )
         try {
             if ( !f.isDirectory ) {
                 f.mkdirs()
@@ -66,10 +66,10 @@ class Goose( config : Configuration = new Configuration ) {
             case e : Exception =>
         }
         if ( !f.isDirectory ) {
-            throw new Exception( config.localStoragePath + " directory does not seem to exist, you need to set this for image processing downloads" )
+            throw new Exception( context.localStoragePath + " directory does not seem to exist, you need to set this for image processing downloads" )
         }
         if ( !f.canWrite ) {
-            throw new Exception( config.localStoragePath + " directory is not writeble, you need to set this for image processing downloads" )
+            throw new Exception( context.localStoragePath + " directory is not writeble, you need to set this for image processing downloads" )
         }
 
         // todo cleanup any jank that may be in the tmp folder currently

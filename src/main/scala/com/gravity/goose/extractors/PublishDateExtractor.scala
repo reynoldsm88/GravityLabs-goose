@@ -17,9 +17,10 @@
   */
 package com.gravity.goose.extractors
 
+import java.time.ZonedDateTime
 import java.util.Date
-import javax.xml.datatype.DatatypeFactory
 
+import javax.xml.datatype.DatatypeFactory
 import com.gravity.goose.utils.Logging
 import org.jsoup.nodes.Element
 
@@ -63,11 +64,14 @@ object PublishDateExtractor extends Logging {
       * Helper function to parse ISO 8601 date/time strings safely.
       */
     def safeParseISO8601Date( txt : String ) : Option[ java.util.Date ] = {
+        println( "########" )
+        println( txt )
         if ( txt == null || txt.isEmpty )
             return None
 
         try {
-            Option( datatypeFactory.newXMLGregorianCalendar( txt ).toGregorianCalendar.getTime )
+            println( datatypeFactory.newXMLGregorianCalendar( txt ).getMillisecond )
+            Option( datatypeFactory.newXMLGregorianCalendar( txt ).toGregorianCalendar.getTime ) // @GOOSE-01
         } catch {
             case ex : Exception =>
                 info( s"`$txt` could not be parsed to date as it did not meet the ISO 8601 spec" )

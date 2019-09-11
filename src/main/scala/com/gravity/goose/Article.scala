@@ -18,9 +18,12 @@
 
 package com.gravity.goose
 
+import java.time.ZonedDateTime
+
 import images.Image
-import org.jsoup.nodes.{Element, Document}
+import org.jsoup.nodes.{Document, Element}
 import java.util.Date
+
 import scala.collection._
 
 /**
@@ -113,7 +116,7 @@ class Article {
     /**
       * Sometimes useful to try and know when the publish date of an article was
       */
-    var publishDate : Date = null
+    var publishDate : ZonedDateTime = null // @GOOSE-01
 
     /**
       * A property bucket for consumers of goose to store custom data extractions.

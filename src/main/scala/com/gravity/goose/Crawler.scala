@@ -34,9 +34,9 @@ import com.gravity.goose.outputformatters.{StandardOutputFormatter, OutputFormat
   * Date: 8/18/11
   */
 
-case class CrawlCandidate( config : Configuration, url : String, rawHTML : String = null )
+case class CrawlCandidate( config : Configuration, context : ExtractorContext, url : String, rawHTML : String = null )
 
-class Crawler( config : Configuration ) {
+class Crawler( config : Configuration, context : ExtractorContext ) {
 
     import Crawler._
 
@@ -61,8 +61,8 @@ class Crawler( config : Configuration ) {
             article.rawDoc = doc.clone()
 
             article.title = extractor.getTitle( article )
-            article.publishDate = config.publishDateExtractor.extract( doc )
-            article.additionalData = config.getAdditionalDataExtractor.extract( doc )
+            article.publishDate = context.publishDateExtractor.extract( doc )
+            article.additionalData = context.additionalDataExtractor.extract( doc )
             article.metaDescription = extractor.getMetaDescription( article )
             article.metaKeywords = extractor.getMetaKeywords( article )
             article.canonicalLink = extractor.getCanonicalLink( article )
@@ -76,7 +76,7 @@ class Crawler( config : Configuration ) {
                     article.topNode = node
                     article.movies = extractor.extractVideos( article.topNode )
 
-                    if ( config.enableImageFetching ) {
+                    if ( context.enableImageFetching ) {
                         trace( logPrefix + "Image fetching enabled..." )
                         val imageExtractor = getImageExtractor( article )
                         try {
@@ -109,7 +109,7 @@ class Crawler( config : Configuration ) {
         if ( crawlCandidate.rawHTML != null ) {
             Some( crawlCandidate.rawHTML )
         } else {
-            config.getHtmlFetcher.getHtml( config, parsingCandidate.url.toString ) match {
+            context.htmlFetcher.getHtml( config, parsingCandidate.url.toString ) match {
                 case Some( html ) => {
                     Some( html )
                 }
@@ -120,7 +120,7 @@ class Crawler( config : Configuration ) {
 
 
     def getImageExtractor( article : Article ) : ImageExtractor = {
-        val httpClient : HttpClient = config.getHtmlFetcher.getHttpClient
+        val httpClient : HttpClient = context.htmlFetcher.getHttpClient
         new UpgradedImageIExtractor( httpClient, article, config )
     }
 
@@ -145,7 +145,7 @@ class Crawler( config : Configuration ) {
     }
 
     def getExtractor : ContentExtractor = {
-        config.contentExtractor
+        context.contentExtractor
     }
 
     /**
@@ -155,7 +155,7 @@ class Crawler( config : Configuration ) {
     def releaseResources( article : Article ) {
         trace( logPrefix + "STARTING TO RELEASE ALL RESOURCES" )
 
-        val dir : File = new File( config.localStoragePath )
+        val dir : File = new File( context.localStoragePath )
 
         dir.list.foreach( filename => {
             if ( filename.startsWith( article.linkhash ) ) {

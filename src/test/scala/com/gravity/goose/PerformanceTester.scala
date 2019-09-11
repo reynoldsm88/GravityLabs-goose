@@ -2,6 +2,8 @@ package com.gravity.goose
 
 import org.apache.commons.lang.time.StopWatch
 import java.io.InputStream
+
+import jdk.nashorn.internal.ir.annotations.Ignore
 import org.apache.commons.io.IOUtils
 import utils.FileHelper
 
