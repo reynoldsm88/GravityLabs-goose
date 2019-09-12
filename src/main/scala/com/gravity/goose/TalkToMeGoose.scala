@@ -26,10 +26,9 @@ object TalkToMeGoose {
     def main( args : Array[ String ] ) {
         try {
             val url : String = args( 0 )
-            val config : Configuration = new Configuration
-            config.enableImageFetching = false
-            val goose = new Goose( config )
-            val article = goose.extractContent( url )
+            val goose = new Goose()
+            val article = goose.extractContent( "https://www.nytimes.com/2019/09/10/style/oh-behave.html" )
+            println( article.publishDate )
             println( article.cleanedArticleText )
         }
         catch {

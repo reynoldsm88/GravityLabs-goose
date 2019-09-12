@@ -18,15 +18,14 @@
 
 package com.gravity.goose
 
-import cleaners.{StandardDocumentCleaner, DocumentCleaner}
-import extractors.ContentExtractor
-import images.{Image, UpgradedImageIExtractor, ImageExtractor}
-import org.apache.http.client.HttpClient
-import org.jsoup.nodes.{Document, Element}
-import org.jsoup.Jsoup
 import java.io.File
-import utils.{ParsingCandidate, URLHelper, Logging}
-import com.gravity.goose.outputformatters.{StandardOutputFormatter, OutputFormatter}
+
+import com.gravity.goose.cleaners.{DocumentCleaner, StandardDocumentCleaner}
+import com.gravity.goose.extractors.ContentExtractor
+import com.gravity.goose.outputformatters.{OutputFormatter, StandardOutputFormatter}
+import com.gravity.goose.utils.{Logging, ParsingCandidate, URLHelper}
+import org.jsoup.Jsoup
+import org.jsoup.nodes.{Document, Element}
 
 /**
   * Created by Jim Plush
@@ -34,9 +33,9 @@ import com.gravity.goose.outputformatters.{StandardOutputFormatter, OutputFormat
   * Date: 8/18/11
   */
 
-case class CrawlCandidate( config : Configuration, url : String, rawHTML : String = null )
+case class CrawlCandidate( context : ExtractorContext, url : String, rawHTML : String = null )
 
-class Crawler( config : Configuration ) {
+class Crawler( context : ExtractorContext ) {
 
     import Crawler._
 
@@ -61,8 +60,8 @@ class Crawler( config : Configuration ) {
             article.rawDoc = doc.clone()
 
             article.title = extractor.getTitle( article )
-            article.publishDate = config.publishDateExtractor.extract( doc )
-            article.additionalData = config.getAdditionalDataExtractor.extract( doc )
+            article.publishDate = context.publishDateExtractor.extract( doc )
+            article.additionalData = context.additionalDataExtractor.extract( doc )
             article.metaDescription = extractor.getMetaDescription( article )
             article.metaKeywords = extractor.getMetaKeywords( article )
             article.canonicalLink = extractor.getCanonicalLink( article )
@@ -75,25 +74,7 @@ class Crawler( config : Configuration ) {
                 case Some( node : Element ) => {
                     article.topNode = node
                     article.movies = extractor.extractVideos( article.topNode )
-
-                    if ( config.enableImageFetching ) {
-                        trace( logPrefix + "Image fetching enabled..." )
-                        val imageExtractor = getImageExtractor( article )
-                        try {
-                            if ( article.rawDoc == null ) {
-                                article.topImage = new Image
-                            } else {
-                                article.topImage = imageExtractor.getBestImage( article.rawDoc, article.topNode )
-                            }
-                        } catch {
-                            case e : Exception => {
-                                warn( e, e.toString )
-                            }
-                        }
-                    }
                     article.topNode = extractor.postExtractionCleanup( article.topNode )
-
-
                     article.cleanedArticleText = outputFormatter.getFormattedText( article.topNode )
                 }
                 case _ => trace( "NO ARTICLE FOUND" )
@@ -109,19 +90,13 @@ class Crawler( config : Configuration ) {
         if ( crawlCandidate.rawHTML != null ) {
             Some( crawlCandidate.rawHTML )
         } else {
-            config.getHtmlFetcher.getHtml( config, parsingCandidate.url.toString ) match {
+            context.htmlFetcher.getHtml( context, parsingCandidate.url.toString ) match {
                 case Some( html ) => {
                     Some( html )
                 }
                 case _ => None
             }
         }
-    }
-
-
-    def getImageExtractor( article : Article ) : ImageExtractor = {
-        val httpClient : HttpClient = config.getHtmlFetcher.getHttpClient
-        new UpgradedImageIExtractor( httpClient, article, config )
     }
 
     def getOutputFormatter : OutputFormatter = {
@@ -145,17 +120,17 @@ class Crawler( config : Configuration ) {
     }
 
     def getExtractor : ContentExtractor = {
-        config.contentExtractor
+        context.contentExtractor
     }
 
     /**
-      * cleans up any temp files we have laying around like temp images
-      * removes any image in the temp dir that starts with the linkhash of the url we just parsed
+      * cleans up any temp files we have laying
+      * removes any files in the temp dir that starts with the linkhash of the url we just parsed
       */
     def releaseResources( article : Article ) {
         trace( logPrefix + "STARTING TO RELEASE ALL RESOURCES" )
 
-        val dir : File = new File( config.localStoragePath )
+        val dir : File = new File( context.localStoragePath )
 
         dir.list.foreach( filename => {
             if ( filename.startsWith( article.linkhash ) ) {

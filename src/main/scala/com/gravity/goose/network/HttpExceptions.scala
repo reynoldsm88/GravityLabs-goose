@@ -39,5 +39,3 @@ object HttpStatusValidator {
         case unk => Left( new UnhandledStatusCodeException( url, statusCode ) )
     }
 }
-
-class ImageFetchException( imgSrc : String, ex : Exception = null ) extends LoggableException( "Failed to fetch image file from imgSrc: " + imgSrc, ex )

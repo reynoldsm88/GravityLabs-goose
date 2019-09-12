@@ -22,13 +22,12 @@ import java.io._
 import java.net.{SocketException, SocketTimeoutException, URLConnection}
 import java.util.{ArrayList, Date, List}
 
-import com.gravity.goose.Configuration
+import com.gravity.goose.ExtractorContext
 import com.gravity.goose.utils.Logging
-import org.apache.http.{HttpEntity, HttpResponse, HttpVersion}
-import org.apache.http.client.{CookieStore, HttpClient}
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.params.CookiePolicy
 import org.apache.http.client.protocol.ClientContext
+import org.apache.http.client.{CookieStore, HttpClient}
 import org.apache.http.conn.scheme.{PlainSocketFactory, Scheme, SchemeRegistry}
 import org.apache.http.conn.ssl.SSLSocketFactory
 import org.apache.http.cookie.Cookie
@@ -37,6 +36,7 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
 import org.apache.http.params.{BasicHttpParams, HttpConnectionParams, HttpParams, HttpProtocolParams}
 import org.apache.http.protocol.{BasicHttpContext, HttpContext}
 import org.apache.http.util.EntityUtils
+import org.apache.http.{HttpEntity, HttpResponse, HttpVersion}
 
 
 /**
@@ -68,7 +68,7 @@ object HtmlFetcher extends AbstractHtmlFetcher with Logging {
     /**
       * Makes an http fetch to go retrieve the HTML from a url, store it to disk and pass it off
       *
-      * @param config Goose Configuration
+      * @param context global extractor variables
       * @param url    The web address to fetch
       * @return If all goes well, a `Some[String]` otherwise `None`
       * @throws NotFoundException            (String)
@@ -78,7 +78,7 @@ object HtmlFetcher extends AbstractHtmlFetcher with Logging {
       * @throws UnhandledStatusCodeException (String, Int)
       * @throws MaxBytesException            ()
       */
-    def getHtml( config : Configuration, url : String ) : Option[ String ] = {
+    def getHtml( context : ExtractorContext, url : String ) : Option[ String ] = {
         var httpget : HttpGet = null
         var htmlResult : String = null
         var entity : HttpEntity = null
@@ -95,11 +95,11 @@ object HtmlFetcher extends AbstractHtmlFetcher with Logging {
             val localContext : HttpContext = new BasicHttpContext
             localContext.setAttribute( ClientContext.COOKIE_STORE, HtmlFetcher.emptyCookieStore )
             httpget = new HttpGet( cleanUrl )
-            HttpProtocolParams.setUserAgent( httpClient.getParams, config.getBrowserUserAgent() );
+            HttpProtocolParams.setUserAgent( httpClient.getParams, context.getBrowserUserAgent() );
 
             val params = httpClient.getParams
-            HttpConnectionParams.setConnectionTimeout( params, config.getConnectionTimeout() )
-            HttpConnectionParams.setSoTimeout( params, config.getSocketTimeout() )
+            HttpConnectionParams.setConnectionTimeout( params, context.getConnectionTimeout() )
+            HttpConnectionParams.setSoTimeout( params, context.getSocketTimeout() )
 
             trace( "Setting UserAgent To: " + HttpProtocolParams.getUserAgent( httpClient.getParams ) )
             val response : HttpResponse = httpClient.execute( httpget, localContext )
