@@ -25,7 +25,7 @@ import java.io.File
   * Created by Jim Plush - Gravity.com
   * Date: 8/14/11
   */
-class Goose( config : Configuration = new Configuration, context : ExtractorContext = ExtractorContext() ) {
+class Goose( context : ExtractorContext = ExtractorContext() ) {
 
 
     initializeEnvironment()
@@ -36,12 +36,12 @@ class Goose( config : Configuration = new Configuration, context : ExtractorCont
       * @url The url that you want to extract
       */
     def extractContent( url : String, rawHTML : String ) : Article = {
-        val cc = new CrawlCandidate( config, context, url, rawHTML )
+        val cc = new CrawlCandidate( context, url, rawHTML )
         sendToActor( cc )
     }
 
     def extractContent( url : String ) : Article = {
-        val cc = new CrawlCandidate( config, context, url, null )
+        val cc = new CrawlCandidate( context, url, null )
         sendToActor( cc )
     }
 
@@ -50,7 +50,7 @@ class Goose( config : Configuration = new Configuration, context : ExtractorCont
     }
 
     def sendToActor( crawlCandidate : CrawlCandidate ) = {
-        val crawler = new Crawler( config, context )
+        val crawler = new Crawler( context )
         val article = crawler.crawl( crawlCandidate )
         article
     }
@@ -66,10 +66,10 @@ class Goose( config : Configuration = new Configuration, context : ExtractorCont
             case e : Exception =>
         }
         if ( !f.isDirectory ) {
-            throw new Exception( context.localStoragePath + " directory does not seem to exist, you need to set this for image processing downloads" )
+            throw new Exception( context.localStoragePath + " directory does not seem to exist, you need to set this for storing data" )
         }
         if ( !f.canWrite ) {
-            throw new Exception( context.localStoragePath + " directory is not writeble, you need to set this for image processing downloads" )
+            throw new Exception( context.localStoragePath + " directory is not writeble, you need to set this for storing data" )
         }
 
         // todo cleanup any jank that may be in the tmp folder currently
@@ -78,13 +78,7 @@ class Goose( config : Configuration = new Configuration, context : ExtractorCont
 }
 
 object Goose {
-
-    implicit val config = new Configuration
-
+    implicit val context = ExtractorContext
     val logPrefix = "goose: "
-
-    // create the crawling actor that will accept bulk crawls
-    //  val crawlingActor = Actor.actorOf[CrawlingActor]
-    //  crawlingActor.start()
 
 }

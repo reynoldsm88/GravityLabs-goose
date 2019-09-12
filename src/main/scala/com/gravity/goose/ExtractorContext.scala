@@ -48,7 +48,6 @@ case class ExtractorContext( @BeanProperty
         }
 
         final val pubSelectors = Seq( "meta[property~=article:published_time]" )
-
         final val modSelectors = Seq( "meta[property~=article:modified_time]", "meta[property~=og:updated_time]" )
 
         def extract( rootElement : Element ) : java.util.Date = {

@@ -3,14 +3,13 @@
 ##Intro
 
 
-Goose was originally an article extractor written in Java that has most recently (aug2011) converted to a scala project. It's mission is to take any news article or article type web page and not only extract what is the main body of the article but also all meta data and most probable image candidate.
+Goose was originally an article extractor written in Java that has most recently (aug2011) converted to a scala project. It's mission is to take any news article or article type web page and not only extract what is the main body of the article but also all meta data.
 
-The extraction goal is to try and get the purest extraction from the beginning of the article for servicing flipboard/pulse type applications that need to show the first snippet of a web article along with an image.
+The extraction goal is to try and get the purest extraction from the beginning of the article for servicing flipboard/pulse type applications that need to show the first snippet of a web article.
 
 Goose will try to extract the following information:
 
  - Main text of an article
- - Main image of article
  - Any Youtube/Vimeo movies embedded in article
  - Meta Description
  - Meta tags

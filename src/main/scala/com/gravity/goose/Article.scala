@@ -20,9 +20,7 @@ package com.gravity.goose
 
 import java.time.ZonedDateTime
 
-import images.Image
 import org.jsoup.nodes.{Document, Element}
-import java.util.Date
 
 import scala.collection._
 
@@ -69,12 +67,6 @@ class Article {
       * holds the top Element we think is a candidate for the main body of the article
       */
     var topNode : Element = null
-
-    /**
-      * holds the top Image object that we think represents this article
-      */
-    var topImage : Image = new Image
-
 
     /**
       * holds a set of tags that may have been in the artcle, these are not meta keywords

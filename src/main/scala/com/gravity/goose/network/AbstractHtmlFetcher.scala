@@ -1,6 +1,6 @@
 package com.gravity.goose.network
 
-import com.gravity.goose.Configuration
+import com.gravity.goose.ExtractorContext
 import org.apache.http.client.HttpClient
 
 /**
@@ -19,10 +19,10 @@ trait AbstractHtmlFetcher {
       * @param url    the address to access and retrieve content from
       * @return `Some` `String` of the response from the specified `url` or `None` if failed to retrieve HTML.
       */
-    def getHtml( config : Configuration, url : String ) : Option[ String ]
+    def getHtml( context : ExtractorContext, url : String ) : Option[ String ]
 
     /**
-      * A shared accessor for making image calls
+      * A shared accessor
       *
       * @return a fully configured and initialized instance for shared use
       */
